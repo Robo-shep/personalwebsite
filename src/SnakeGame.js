@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 // Game Constants
@@ -14,6 +16,32 @@ const DIRECTIONS = {
   ArrowDown: [0, 1],
   ArrowLeft: [-1, 0],
   ArrowRight: [1, 0],
+};
+
+// Moved outside the component to prevent ESLint dependency warnings 
+// and to avoid recreating these functions on every single render.
+const createApple = () => [
+  Math.floor(Math.random() * (CANVAS_SIZE[0] / SCALE)),
+  Math.floor(Math.random() * (CANVAS_SIZE[1] / SCALE))
+];
+
+const checkCollision = (piece, snk) => {
+  // Check wall collision
+  if (
+    piece[0] * SCALE >= CANVAS_SIZE[0] ||
+    piece[0] < 0 ||
+    piece[1] * SCALE >= CANVAS_SIZE[1] ||
+    piece[1] < 0
+  ) {
+    return true;
+  }
+  // Check self collision
+  for (const segment of snk) {
+    if (piece[0] === segment[0] && piece[1] === segment[1]) {
+      return true;
+    }
+  }
+  return false;
 };
 
 const SnakeGame = () => {
@@ -53,29 +81,7 @@ const SnakeGame = () => {
     }
   }, [dir]);
 
-  const createApple = () =>
-    apple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
-
-  const checkCollision = (piece, snk = snake) => {
-    // Check wall collision
-    if (
-      piece[0] * SCALE >= CANVAS_SIZE[0] ||
-      piece[0] < 0 ||
-      piece[1] * SCALE >= CANVAS_SIZE[1] ||
-      piece[1] < 0
-    ) {
-      return true;
-    }
-    // Check self collision
-    for (const segment of snk) {
-      if (piece[0] === segment[0] && piece[1] === segment[1]) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const checkAppleCollision = (newSnake) => {
+  const checkAppleCollision = useCallback((newSnake) => {
     if (newSnake[0][0] === apple[0] && newSnake[0][1] === apple[1]) {
       let newApple = createApple();
       // Ensure new apple doesn't spawn on top of the snake
@@ -87,14 +93,14 @@ const SnakeGame = () => {
       return true;
     }
     return false;
-  };
+  }, [apple]);
 
   const gameLoop = useCallback(() => {
     const snakeCopy = JSON.parse(JSON.stringify(snake));
     const newSnakeHead = [snakeCopy[0][0] + dir[0], snakeCopy[0][1] + dir[1]];
     snakeCopy.unshift(newSnakeHead);
 
-    if (checkCollision(newSnakeHead)) {
+    if (checkCollision(newSnakeHead, snake)) {
       setGameOver(true);
       return;
     }
@@ -104,7 +110,7 @@ const SnakeGame = () => {
     }
 
     setSnake(snakeCopy);
-  }, [snake, dir]);
+  }, [snake, dir, checkAppleCollision]);
 
   // Handle the game tick
   useEffect(() => {
