@@ -1,0 +1,92 @@
+/* Invisible overlay to catch clicks outside the popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 800; /* Sits below the 900 z-index page-frame so buttons stay on top */
+}
+
+.popup-window {
+  position: absolute;
+  top: 50%;
+  right: 70px; /* Anchors it right next to your hovering buttons */
+  width: 90%;
+  max-width: 450px;
+  background-color: #f5f0e6; /* Matches your creamy white border */
+  border: 1px solid #C6C1AB; /* Matches the grid lines */
+  border-radius: 12px;
+  box-shadow: -15px 15px 35px rgba(0, 0, 0, 0.2); /* Deep drop shadow pushing left and down */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
+  /* The Animation Magic */
+  transform-origin: right center; /* Ensures it scales out from the right edge */
+  animation: slideOutFromDock 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.popup-window.closing {
+  animation: slideInToDock 0.3s ease-in forwards;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: rgba(255, 255, 255, 0.5); /* Slight contrast from the creamy base */
+  border-bottom: 1px solid #C6C1AB;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #666;
+  transition: transform 0.2s;
+}
+
+.close-btn:hover {
+  color: #000;
+  transform: scale(1.2);
+}
+
+.popup-content {
+  padding: 20px;
+  max-height: 70vh; 
+  overflow-y: auto;
+}
+
+/* Keyframes for entering */
+@keyframes slideOutFromDock {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(40px) scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) scale(1);
+  }
+}
+
+/* Keyframes for exiting */
+@keyframes slideInToDock {
+  0% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(40px) scale(0.6);
+  }
+}

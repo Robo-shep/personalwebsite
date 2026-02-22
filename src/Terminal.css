@@ -1,0 +1,55 @@
+.terminal-container {
+  background-color: #1e1e1e;
+  color: #a9dc76; /* Classic terminal green, or use #d4d4d4 for standard VSCode gray */
+  font-family: 'Courier New', Courier, monospace;
+  padding: 20px;
+  border-radius: 6px;
+  height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: text;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Hide scrollbar for a cleaner look */
+.terminal-container::-webkit-scrollbar {
+  width: 8px;
+}
+.terminal-container::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 4px;
+}
+
+.terminal-line {
+  margin-bottom: 4px;
+}
+
+.terminal-input-line {
+  color: #fff;
+}
+
+.terminal-output-line {
+  color: #a9dc76;
+}
+
+.terminal-prompt {
+  display: flex;
+  align-items: center;
+}
+
+.prompt-label {
+  color: #ff6188; /* A contrasting color for the user prompt */
+  margin-right: 8px;
+  white-space: pre;
+}
+
+.terminal-prompt input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+  flex-grow: 1;
+  outline: none;
+}
