@@ -7,8 +7,8 @@ import Popup from './Popup';
 
 // Import your logo
 import logo from './logo.png';
-import meImg from './me.png';      // <-- Add this
-import aboutImg from './about.png'; // <-- Add this
+import meImg from './me.png';      
+import aboutImg from './about.png'; 
 
 // Import the specific icons
 import { FaGithub, FaLinkedin, FaTerminal, FaMusic, FaGamepad } from 'react-icons/fa';
@@ -26,6 +26,40 @@ const playlist = [
 ];
 
 function App() {
+  // --- LOADING STATE & LOGIC ---
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingText, setLoadingText] = useState("Initializing RoboShep OS...");
+
+  useEffect(() => {
+    const imagesToPreload = [logo, meImg, aboutImg];
+    let loadedCount = 0;
+
+    const handleImageLoad = () => {
+      loadedCount++;
+      if (loadedCount === imagesToPreload.length) {
+        setLoadingText("System Ready.");
+        // Short delay so the user actually sees the "System Ready" message
+        setTimeout(() => setIsLoading(false), 600);
+      }
+    };
+
+    imagesToPreload.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      // Trigger check whether it loads successfully or fails
+      img.onload = handleImageLoad;
+      img.onerror = handleImageLoad; 
+    });
+
+    // Fallback: If network is incredibly slow, force load after 3 seconds
+    const safetyTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(safetyTimeout);
+  }, []);
+  // -----------------------------
+
   const [activePopup, setActivePopup] = useState(null);
 
   // --- AUDIO STATE & LOGIC ---
@@ -69,6 +103,44 @@ function App() {
 
   const closePopup = () => setActivePopup(null);
 
+  // --- RENDER LOADING SCREEN ---
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#1e1e1e', // Dark terminal-like background
+        color: '#a9dc76', // Hacker/Terminal green
+        fontFamily: 'monospace',
+        fontSize: '1.5rem'
+      }}>
+        <div className="blinking-cursor-container" style={{ display: 'flex', alignItems: 'center' }}>
+          <span>{loadingText}</span>
+          <span style={{
+            display: 'inline-block',
+            width: '10px',
+            height: '1.2em',
+            backgroundColor: '#a9dc76',
+            marginLeft: '5px',
+            animation: 'blink 1s step-end infinite'
+          }} />
+        </div>
+        <style>
+          {`
+            @keyframes blink {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0; }
+            }
+          `}
+        </style>
+      </div>
+    );
+  }
+
+  // --- RENDER MAIN APP ---
   return (
     <div className="App">
       {/* Persistent Audio Element */}
@@ -104,7 +176,6 @@ function App() {
             </p>
           </div>
           <div className="image-content right-align">
-            {/* Replace src with your profile picture */}
             <div className="placeholder-img-container">
               <img src={meImg} alt="Profile" className="profile-img" />
             </div>
@@ -113,7 +184,6 @@ function App() {
 
         {/* 3. About Section */}
         <section id="about" className="section split-section">
-          {/* Image div moved above the text div so it renders on the left */}
           <div className="image-content left-align">
              <div className="placeholder-img-container">
               <img src={aboutImg} alt="About" className="profile-img" />
